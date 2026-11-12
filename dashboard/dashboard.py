@@ -1,8 +1,10 @@
+
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 from pathlib import Path
 
+# Konfigurasi halaman
 st.set_page_config(
     page_title="Bike Sharing Analytics",
     page_icon="🚲",
@@ -10,6 +12,7 @@ st.set_page_config(
 )
 
 
+# Konfigurasi warna
 WARNA_UTAMA = "#238477"
 WARNA_HIGHLIGHT = "#E59A45"
 
@@ -19,6 +22,8 @@ tema_grafik = (
     else "plotly_white"
 )
 
+
+# Custom CSS
 st.markdown("""
 <style>
     .stApp {
@@ -30,34 +35,55 @@ st.markdown("""
         background-color: var(--secondary-background-color);
     }
 
+    /* Header Dashboard */
+    .header-card {
+        background: rgba(35, 132, 119, 0.10);
+        border: 1px solid rgba(35, 132, 119, 0.35);
+        border-left: 6px solid #238477;
+        border-radius: 16px;
+        padding: 25px 28px;
+        margin-bottom: 20px;
+    }
+
     .main-title {
         font-size: 34px;
         font-weight: 800;
         color: var(--text-color);
-        margin-bottom: 4px;
+        margin-bottom: 8px;
     }
 
     .subtitle {
         font-size: 15px;
         color: var(--text-color);
         opacity: 0.75;
-        margin-bottom: 20px;
+        margin-bottom: 0;
     }
 
+    /* Judul Bagian */
     .section-title {
         font-size: 21px;
         font-weight: 700;
         color: var(--text-color);
-        margin-top: 15px;
-        margin-bottom: 10px;
+        border-left: 4px solid #238477;
+        padding-left: 12px;
+        margin-top: 20px;
+        margin-bottom: 15px;
     }
 
+    /* Metric Cards */
     div[data-testid="stMetric"] {
-        background-color: var(--secondary-background-color);
+        background: var(--secondary-background-color);
         border: 1px solid var(--border-color);
         padding: 20px;
-        border-radius: 13px;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+        border-radius: 14px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        min-height: 115px;
+        transition: 0.2s ease;
+    }
+
+    div[data-testid="stMetric"]:hover {
+        border-color: #238477;
+        transform: translateY(-3px);
     }
 
     div[data-testid="stMetricLabel"],
@@ -66,34 +92,43 @@ st.markdown("""
         color: var(--text-color);
     }
 
+    /* Grafik Cards */
     div[data-testid="stPlotlyChart"] {
-        background-color: var(--secondary-background-color);
+        background: var(--secondary-background-color);
         border: 1px solid var(--border-color);
-        border-radius: 13px;
-        padding: 10px;
+        border-radius: 14px;
+        padding: 12px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.04);
     }
 
+    /* Insight Cards */
     .insight-box {
-        background-color: var(--secondary-background-color);
+        background: var(--secondary-background-color);
+        border: 1px solid var(--border-color);
         border-left: 5px solid #238477;
-        padding: 15px 18px;
-        border-radius: 8px;
+        padding: 18px 20px;
+        border-radius: 12px;
         color: var(--text-color);
         margin-bottom: 10px;
+        line-height: 1.7;
+        min-height: 145px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.04);
     }
 
+    /* Footer */
     .footer {
         text-align: center;
         color: var(--text-color);
         opacity: 0.65;
         font-size: 13px;
-        padding: 15px;
+        padding: 20px;
     }
+
 </style>
 """, unsafe_allow_html=True)
 
 
-# memuat dataset
+# Memuat dataset
 BASE_DIR = Path(__file__).resolve().parent
 
 @st.cache_data
@@ -105,6 +140,7 @@ def load_data():
 df = load_data()
 
 
+# Sidebar
 st.sidebar.markdown("## 🚲 Bike Sharing")
 st.sidebar.caption("Analytics Dashboard")
 st.sidebar.divider()
@@ -147,22 +183,25 @@ if data_filter.empty:
     st.stop()
 
 
-
+# Header Dashboard
 st.markdown(
-    '<div class="main-title">🚲 Bike Sharing Analytics</div>',
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    '<div class="subtitle">'
-    'Dashboard Analisis Pola Penyewaan Sepeda Tahun 2011–2012'
-    '</div>',
+    """
+    <div class="header-card">
+        <div class="main-title">
+            🚲 Bike Sharing Analytics
+        </div>
+        <div class="subtitle">
+            Dashboard Analisis Pola Penyewaan Sepeda Tahun 2011–2012
+        </div>
+    </div>
+    """,
     unsafe_allow_html=True
 )
 
 st.divider()
 
 
+# Ringkasan Penyewaan Sepeda
 st.markdown(
     '<div class="section-title">Ringkasan Penyewaan Sepeda</div>',
     unsafe_allow_html=True
@@ -198,7 +237,7 @@ col4.metric(
 st.divider()
 
 
-
+# Fungsi warna grafik
 def warna_bar(data, kolom_nilai):
     nilai_tertinggi = data[kolom_nilai].max()
 
@@ -209,9 +248,9 @@ def warna_bar(data, kolom_nilai):
     ]
 
 
-# grafik 1: pola penyewaan berdasarkan jam
+# Grafik 1: Pola penyewaan berdasarkan jam
 st.markdown(
-    '<div class="section-title">1. Pola Penyewaan Berdasarkan Jam</div>',
+    '<div class="section-title">🕒 Pola Penyewaan Berdasarkan Jam</div>',
     unsafe_allow_html=True
 )
 
@@ -257,9 +296,9 @@ fig_jam.update_layout(
 st.plotly_chart(fig_jam, use_container_width=True)
 
 
-# grafik 2: penyewaan berdasarkan kondisi cuaca
+# Grafik 2: Penyewaan berdasarkan kondisi cuaca
 st.markdown(
-    '<div class="section-title">2. Penyewaan Berdasarkan Kondisi Cuaca</div>',
+    '<div class="section-title">🌤️ Penyewaan Berdasarkan Kondisi Cuaca</div>',
     unsafe_allow_html=True
 )
 
@@ -318,10 +357,9 @@ st.caption(
 )
 
 
-# grafik 3: penyewaan berdasarkan periode waktu
-
+# Grafik 3: Penyewaan berdasarkan periode waktu
 st.markdown(
-    '<div class="section-title">3. Penyewaan Berdasarkan Periode Waktu</div>',
+    '<div class="section-title">☀️ Penyewaan Berdasarkan Periode Waktu</div>',
     unsafe_allow_html=True
 )
 
@@ -384,10 +422,9 @@ fig_waktu.update_layout(
 st.plotly_chart(fig_waktu, use_container_width=True)
 
 
-# grafik 4: penyewaan berdasarkan kategori suhu
-
+# Grafik 4: Penyewaan berdasarkan kategori suhu
 st.markdown(
-    '<div class="section-title">4. Penyewaan Berdasarkan Kategori Suhu</div>',
+    '<div class="section-title">🌡️ Penyewaan Berdasarkan Kategori Suhu</div>',
     unsafe_allow_html=True
 )
 
@@ -444,10 +481,9 @@ st.caption(
 )
 
 
-# grafik 5: tren penyewaan sepeda harian
-
+# Grafik 5: Tren penyewaan sepeda harian
 st.markdown(
-    '<div class="section-title">5. Tren Penyewaan Sepeda</div>',
+    '<div class="section-title">📈 Tren Penyewaan Sepeda</div>',
     unsafe_allow_html=True
 )
 
@@ -485,8 +521,7 @@ fig_tren.update_layout(
 st.plotly_chart(fig_tren, use_container_width=True)
 
 
-# insight analisis
-
+# Insight Analisis
 st.divider()
 
 st.markdown(
@@ -509,7 +544,7 @@ with col1:
     st.markdown(
         f"""
         <div class="insight-box">
-            <b>Pola Waktu Penyewaan</b><br>
+            <b>🕒 Pola Waktu Penyewaan</b><br>
             Jam tersibuk adalah pukul
             <b>{int(jam_tertinggi['hr']):02d}.00</b>
             dengan rata-rata
@@ -527,7 +562,7 @@ with col2:
     st.markdown(
         f"""
         <div class="insight-box">
-            <b>Pola Cuaca dan Suhu</b><br>
+            <b>🌤️ Pola Cuaca dan Suhu</b><br>
             Rata-rata penyewaan tertinggi berdasarkan cuaca
             terjadi saat <b>{cuaca_tertinggi['Nama Cuaca']}</b>,
             sedangkan berdasarkan suhu terjadi pada kategori
@@ -538,7 +573,7 @@ with col2:
     )
 
 
-# footer
+# Footer
 st.divider()
 
 st.markdown(
